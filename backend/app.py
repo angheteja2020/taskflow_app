@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 import sqlite3
 
 app = Flask(__name__)
@@ -13,6 +13,25 @@ def init_db():
 @app.route('/')
 def hello():
     return 'Hello, Flask is running'
+
+@app.route('/tasks', methods=['POST'])
+def create_task():
+    data = request.get_json()
+    title = data.get('title')
+    description = data.get('description', '')
+
+    # Connect to your SQLite database
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        'INSERT INTO tasks (title, description) VALUES (?, ?)',
+        (title, description)
+    )
+    task_id = cursor.lastrowid
+    conn.commit()
+    conn.close()
+
+    return jsonify({'id': task_id}), 201
 
 if __name__ == "__main__":
     init_db()
