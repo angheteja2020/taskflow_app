@@ -14,6 +14,7 @@ def init_db():
 def hello():
     return 'Hello, Flask is running'
 
+# Finish session
 @app.route('/tasks', methods=['POST'])
 def create_task():
     data = request.get_json()
